@@ -1,1 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Today's Events</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(-45deg, #f5f5f5, #e0e7ff, #f0fdf4, #f5f0ff);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      padding: 20px;
+      text-align: center;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    /* Dynamic Island style */
+    .dynamic-island {
+      display: inline-block;
+      background-color: black;
+      color: white;
+      padding: 8px 20px 8px 30px;
+      border-radius: 30px;
+      font-size: 1.2em;
+      margin-bottom: 30px;
+      position: relative;
+      opacity: 0;
+      animation: fadeIn 2s ease-out forwards;
+    }
 
+    /* Breathing green dot */
+    .green-dot {
+      width: 10px;
+      height: 10px;
+      background-color: limegreen;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 12px;
+      transform: translateY(-50%);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: translateY(-50%) scale(1); opacity: 1; }
+      50% { transform: translateY(-50%) scale(1.5); opacity: 0.5; }
+      100% { transform: translateY(-50%) scale(1); opacity: 1; }
+    }
+
+    /* Apple-style Notification */
+    .event-notification {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      margin: 10px auto;
+      max-width: 400px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: left;
+      opacity: 0;
+      animation: slideUp 1s ease-out forwards;
+    }
+
+    @keyframes slideUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .event-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .event-info {
+      font-size: 0.95em;
+      margin: 4px 0;
+    }
+
+    .free-badge {
+      background: #34c759;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 0.8em;
+      margin-left: 5px;
+    }
+
+    .register-link {
+      margin-top: 10px;
+      display: inline-block;
+      background: #007aff;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 0.9em;
+    }
+
+    .register-link:hover {
+      background: #0051a8;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Dynamic Island -->
+<div class="dynamic-island">
+  Today's Events
+  <div class="green-dot"></div>
+</div>
+
+<!-- Events -->
+<div id="events-container" style="opacity: 0; animation: fadeIn 1s ease-out forwards;">
+  Loading events...
+</div>
+
+<script>
+async function loadEvents() {
+  try {
+    const response = await fetch('https://raw.githubusercontent.com/mycsd/demo2/main/events.json');
+    const events = await response.json();
+    
+    const container = document.getElementById('events-container');
+    container.innerHTML = '';
+
+    if (events.length === 0) {
+      container.innerHTML = '<p>No events today.</p>';
+      return;
+    }
+
+    events.forEach(event => {
+      const card = document.createElement('div');
+      card.className = 'event-notification';
+
+      // Format fee display
+      let feeDisplay = '';
+      if (event.fee && event.fee.toLowerCase() !== 'free' && event.fee !== '0') {
+        feeDisplay = `<div class="event-info"><strong>💰 Fee:</strong> RM ${event.fee}</div>`;
+      } else {
+        feeDisplay = '<div class="event-info"><strong>💰 Fee:</strong> <span class="free-badge">FREE</span></div>';
+      }
+
+      // Registration link handling
+      let registerHTML = '';
+      if (event["registration link"]) {
+        if (event["registration link"].toLowerCase() === 'walk in') {
+          registerHTML = '<span class="register-link">Walk In</span>';
+        } else if (!event["registration link"].toLowerCase().includes('no registration')) {
+          registerHTML = `<a class="register-link" href="${event["registration link"]}" target="_blank">Register</a>`;
+        }
+      }
+
+      card.innerHTML = `
+        <div class="event-title">${event["event name"]}</div>
+        <div class="event-info"><strong>📅 Date:</strong> ${event.date}</div>
+        <div class="event-info"><strong>🕒 Time:</strong> ${event.time}</div>
+        <div class="event-info"><strong>📍 Platform:</strong> ${event.platform}</div>
+        ${feeDisplay}
+        ${registerHTML}
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error('Error loading events:', error);
+    document.getElementById('events-container').innerText = 'Failed to load events.';
+  }
+}
+
+loadEvents();
+</script>
+
+</body>
+</html>
