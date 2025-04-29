@@ -138,26 +138,37 @@ async function loadEvents() {
     const container = document.getElementById('events-container');
     container.innerHTML = '';
 
-    if (events.length === 0) {
+   // Filter out invalid events
+    const validEvents = events.filter(event => {
+      return !(
+        event["event name"] === "#REF!" && 
+        event.time === "NaN:00" && 
+        event.platform === "#REF!" && 
+        event.fee === "#REF!" && 
+        event["registration link"] === "#REF!"
+      );
+    });
+
+    if (validEvents.length === 0) {
       container.innerHTML = '<p>No events today.</p>';
       return;
     }
 
-    events.forEach(event => {
+    validEvents.forEach(event => {
       const card = document.createElement('div');
       card.className = 'event-notification';
 
       // Format fee display
       let feeDisplay = '';
-      if (event.fee && event.fee.toLowerCase() !== 'free' && event.fee !== '0') {
+      if (event.fee && event.fee !== "#REF!" && event.fee.toLowerCase() !== 'free' && event.fee !== '0') {
         feeDisplay = `<div class="event-info"><strong>💰 Fee:</strong> RM ${event.fee}</div>`;
-      } else {
+      } else if (event.fee && event.fee !== "#REF!") {
         feeDisplay = '<div class="event-info"><strong>💰 Fee:</strong> <span class="free-badge">FREE</span></div>';
       }
 
       // Registration link handling
       let registerHTML = '';
-      if (event["registration link"]) {
+      if (event["registration link"] && event["registration link"] !== "#REF!") {
         if (event["registration link"].toLowerCase() === 'walk in') {
           registerHTML = '<span class="register-link">Walk In</span>';
         } else if (!event["registration link"].toLowerCase().includes('no registration')) {
@@ -166,13 +177,14 @@ async function loadEvents() {
       }
 
       card.innerHTML = `
-        <div class="event-title">${event["event name"]}</div>
+        <div class="event-title">${event["event name"] !== "#REF!" ? event["event name"] : 'Event'}</div>
         <div class="event-info"><strong>📅 Date:</strong> ${event.date}</div>
-        <div class="event-info"><strong>🕒 Time:</strong> ${event.time}</div>
-        <div class="event-info"><strong>📍 Platform:</strong> ${event.platform}</div>
+        ${event.time !== "NaN:00" ? `<div class="event-info"><strong>🕒 Time:</strong> ${event.time}</div>` : ''}
+        ${event.platform !== "#REF!" ? `<div class="event-info"><strong>📍 Platform:</strong> ${event.platform}</div>` : ''}
         ${feeDisplay}
         ${registerHTML}
       `;
+
 
       container.appendChild(card);
     });
