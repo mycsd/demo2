@@ -1,42 +1,29 @@
 [
   {
-    "date": "2025-04-29",
-    "event name": "理工华乐团 - 造势活动 | 《吟梦初响》",
-    "time": "18:30",
-    "platform": "Lembaran Cafe",
-    "fee": "✨Free",
-    "registration link": "https://forms.gle/hhC1jKnkbY4JNN1S7"
+    "date": "2025-04-30",
+    "event name": "Trend in Robotics",
+    "time": "15:00",
+    "end_time": "NaN:NaN",
+    "venue": "1899-12-30T08:23:18.000Z",
+    "fee": "Webex",
+    "registration link": "?Free"
   },
   {
-    "date": "2025-04-29",
-    "event name": "#REF!",
-    "time": "NaN:00",
-    "platform": "#REF!",
-    "fee": "#REF!",
-    "registration link": "#REF!"
+    "date": "2025-04-30",
+    "event name": "PREPARING FOR THE WORKFORCE",
+    "time": "20:00",
+    "end_time": "NaN:NaN",
+    "venue": "1899-12-30T13:23:18.000Z",
+    "fee": "Webex",
+    "registration link": 1
   },
   {
-    "date": "2025-04-29",
-    "event name": "#REF!",
-    "time": "NaN:00",
-    "platform": "#REF!",
-    "fee": "#REF!",
-    "registration link": "#REF!"
-  },
-  {
-    "date": "2025-04-29",
-    "event name": "#REF!",
-    "time": "NaN:00",
-    "platform": "#REF!",
-    "fee": "#REF!",
-    "registration link": "#REF!"
-  },
-  {
-    "date": "2025-04-29",
-    "event name": "GEAR UP FOR QUIZTRON",
-    "time": "NaN:00",
-    "platform": "GOOGLE FORM",
-    "fee": 1,
-    "registration link": "https://forms.gle/FLzf8Cmd1EvPLgYWA"
+    "date": "2025-04-30",
+    "event name": "SHED THE LIGHT 3.0 TALK (Ep 4)",
+    "time": "20:00",
+    "end_time": "NaN:NaN",
+    "venue": "1899-12-30T13:23:18.000Z",
+    "fee": "Webex",
+    "registration link": 1
   }
 ]
