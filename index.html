@@ -21,7 +21,6 @@
       100% { background-position: 0% 50%; }
     }
     
-    /* Dynamic Island style */
     .dynamic-island {
       display: inline-block;
       background-color: black;
@@ -35,7 +34,6 @@
       animation: fadeIn 2s ease-out forwards;
     }
 
-    /* Breathing green dot */
     .green-dot {
       width: 10px;
       height: 10px;
@@ -54,7 +52,6 @@
       100% { transform: translateY(-50%) scale(1); opacity: 1; }
     }
 
-    /* Apple-style Notification */
     .event-notification {
       background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px);
@@ -79,24 +76,25 @@
       font-size: 1.2em;
       font-weight: 600;
       margin-bottom: 10px;
+      color: #1a1a1a;
     }
 
     .event-info {
       font-size: 0.95em;
-      margin: 4px 0;
+      margin: 6px 0;
+      color: #333;
+      display: flex;
+      align-items: center;
     }
 
-    .free-badge {
-      background: #34c759;
-      color: white;
-      padding: 3px 8px;
-      border-radius: 10px;
-      font-size: 0.8em;
-      margin-left: 5px;
+    .event-info strong {
+      min-width: 80px;
+      display: inline-block;
+      color: #555;
     }
 
     .register-link {
-      margin-top: 10px;
+      margin-top: 15px;
       display: inline-block;
       background: #007aff;
       color: white;
@@ -104,15 +102,46 @@
       border-radius: 12px;
       text-decoration: none;
       font-size: 0.9em;
+      transition: all 0.2s ease;
     }
 
     .register-link:hover {
       background: #0051a8;
+      transform: translateY(-2px);
+    }
+
+    .fee-tag {
+      background: #34c759;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8em;
+      margin-left: 8px;
+    }
+
+    .free-tag {
+      background: #ff9500;
+    }
+
+    .time-range {
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     @keyframes fadeIn {
       0% { opacity: 0; }
       100% { opacity: 1; }
+    }
+
+    .no-events {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      margin: 20px auto;
+      color: #555;
     }
   </style>
 </head>
@@ -124,7 +153,7 @@
   <div class="green-dot"></div>
 </div>
 
-<!-- Events -->
+<!-- Events Container -->
 <div id="events-container" style="opacity: 0; animation: fadeIn 1s ease-out forwards;">
   Loading events...
 </div>
@@ -138,64 +167,73 @@ async function loadEvents() {
     const container = document.getElementById('events-container');
     container.innerHTML = '';
 
-   // Filter out invalid events
-    const validEvents = events.filter(event => {
-      return !(
-        event["event name"] === "#REF!" && 
-        event.time === "NaN:00" && 
-        event.platform === "#REF!" && 
-        event.fee === "#REF!" && 
-        event["registration link"] === "#REF!"
-      );
-    });
-
-    if (validEvents.length === 0) {
-      container.innerHTML = '<p>No events today.</p>';
+    if (events.length === 0) {
+      container.innerHTML = `
+        <div class="no-events">
+          <p>No events scheduled for today.</p>
+          <p>Check back later!</p>
+        </div>
+      `;
       return;
     }
 
-    validEvents.forEach(event => {
+    events.forEach(event => {
       const card = document.createElement('div');
       card.className = 'event-notification';
 
-      // Format fee display
-      let feeDisplay = '';
-      if (event.fee && event.fee !== "#REF!" && event.fee.toLowerCase() !== 'free' && event.fee !== '0') {
-        feeDisplay = `<div class="event-info"><strong>💰 Fee:</strong> RM ${event.fee}</div>`;
-      } else if (event.fee && event.fee !== "#REF!") {
-        feeDisplay = '<div class="event-info"><strong>💰 Fee:</strong> <span class="free-badge">FREE</span></div>';
-      }
+      // Format time display
+      const timeDisplay = event.end_time 
+        ? `<div class="time-range">
+            <span>${event.time}</span>
+            <span>→</span>
+            <span>${event.end_time}</span>
+           </div>`
+        : event.time;
 
-      // Registration link handling
+      // Format fee display
+      const feeDisplay = event.fee 
+        ? `<span class="fee-tag ${event.fee.toLowerCase() === 'free' ? 'free-tag' : ''}">
+            ${event.fee}
+           </span>`
+        : '';
+
+      // Registration button logic
       let registerHTML = '';
-      if (event["registration link"] && event["registration link"] !== "#REF!") {
+      if (event["registration link"]) {
         if (event["registration link"].toLowerCase() === 'walk in') {
-          registerHTML = '<span class="register-link">Walk In</span>';
-        } else if (!event["registration link"].toLowerCase().includes('no registration')) {
-          registerHTML = `<a class="register-link" href="${event["registration link"]}" target="_blank">Register</a>`;
+          registerHTML = '<span class="register-link">Walk In Available</span>';
+        } else {
+          registerHTML = `<a class="register-link" href="${event["registration link"]}" target="_blank">Register Now</a>`;
         }
       }
 
       card.innerHTML = `
-        <div class="event-title">${event["event name"] !== "#REF!" ? event["event name"] : 'Event'}</div>
+        <div class="event-title">${event["event name"]}</div>
         <div class="event-info"><strong>📅 Date:</strong> ${event.date}</div>
-        ${event.time !== "NaN:00" ? `<div class="event-info"><strong>🕒 Time:</strong> ${event.time}</div>` : ''}
-        ${event.platform !== "#REF!" ? `<div class="event-info"><strong>📍 Platform:</strong> ${event.platform}</div>` : ''}
-        ${feeDisplay}
+        <div class="event-info"><strong>🕒 Time:</strong> ${timeDisplay}</div>
+        <div class="event-info"><strong>📍 Venue:</strong> ${event.venue} ${feeDisplay}</div>
         ${registerHTML}
       `;
-
 
       container.appendChild(card);
     });
 
   } catch (error) {
     console.error('Error loading events:', error);
-    document.getElementById('events-container').innerText = 'Failed to load events.';
+    document.getElementById('events-container').innerHTML = `
+      <div class="no-events">
+        <p>Failed to load events.</p>
+        <p>Please try again later.</p>
+      </div>
+    `;
   }
 }
 
-loadEvents();
+// Load events when page loads
+document.addEventListener('DOMContentLoaded', loadEvents);
+
+// Refresh every 5 minutes
+setInterval(loadEvents, 300000);
 </script>
 
 </body>
