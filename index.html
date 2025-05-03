@@ -55,7 +55,7 @@
 
     .event-details {
       flex: 1;
-      min-width: 0; /* Prevent overflow */
+      min-width: 0;
     }
 
     .event-details h2 {
@@ -167,6 +167,16 @@
         white-space: normal;
       }
     }
+
+    @keyframes glow {
+      0% { stroke: #666; }
+      50% { stroke: limegreen; }
+      100% { stroke: #666; }
+    }
+
+    .glowing {
+      animation: glow 2s infinite;
+    }
   </style>
 </head>
 <body>
@@ -182,13 +192,13 @@
   </div>
 
   <script>
-    const FULL_CIRCLE = 2 * Math.PI * 30; // Smaller radius for smaller circle
+    const FULL_CIRCLE = 2 * Math.PI * 30;
 
     async function loadEvents() {
       try {
         const response = await fetch('https://raw.githubusercontent.com/mycsd/demo1/main/events.json');
         const events = await response.json();
-        
+
         const container = document.getElementById('events-container');
         container.innerHTML = '';
 
@@ -201,7 +211,6 @@
           const card = document.createElement('div');
           card.className = 'card';
 
-          // Format time range if end time exists
           let timeHTML = '';
           if (event["end time"]) {
             timeHTML = `
@@ -215,7 +224,6 @@
             timeHTML = event.time;
           }
 
-          // Create timer HTML (smaller size)
           const timerHTML = `
             <div class="timer-container">
               <svg width="80" height="80">
@@ -226,7 +234,6 @@
             </div>
           `;
 
-          // Create registration button
           let registerHTML = '';
           if (event["registration link"] && event["registration link"].toLowerCase() !== 'walk in') {
             registerHTML = `<a class="register-link" href="${event["registration link"]}" target="_blank">Register</a>`;
@@ -245,11 +252,8 @@
           `;
 
           container.appendChild(card);
-
-          // Initialize timer for this event
           initTimer(card, event);
         });
-
       } catch (error) {
         console.error('Error loading events:', error);
         document.getElementById('events-container').innerHTML = '<div class="no-events">Failed to load events. Please try again later.</div>';
@@ -259,53 +263,46 @@
     function initTimer(card, event) {
       const circle = card.querySelector(".circle");
       const timerText = card.querySelector(".timer-text");
-      
-      circle.style.strokeDasharray = FULL_CIRCLE;
 
-      // Calculate start and end times (assuming 2 hour duration if no end time)
       const startTime = new Date(`${event.date}T${event.time}`);
-      const endTime = event["end time"] 
+      const endTime = event["end time"]
         ? new Date(`${event.date}T${event["end time"]}`)
         : new Date(startTime.getTime() + 2 * 60 * 60 * 1000);
 
-      const totalCountdown = (startTime - new Date()) / 1000;
+      const initialCountdown = (startTime - new Date()) / 1000;
+
+      circle.style.strokeDasharray = FULL_CIRCLE;
 
       function updateTimer() {
         const now = new Date();
 
         if (now < startTime) {
-          // BEFORE event: countdown mode
-          const timeRemaining = (startTime - now) / 1000; // in seconds
-          const percent = timeRemaining / totalCountdown;
-          const offset = FULL_CIRCLE * percent;
+          // BEFORE event
+          const total = (startTime - now) / 1000;
+          const percent = total / initialCountdown;
+          const offset = FULL_CIRCLE * (1 - percent);
 
           circle.style.stroke = "orange";
           circle.style.strokeDashoffset = offset;
+          circle.classList.remove("glowing");
 
-          const h = Math.floor(timeRemaining / 3600);
-          const m = Math.floor((timeRemaining % 3600) / 60);
+          const h = Math.floor(total / 3600);
+          const m = Math.floor((total % 3600) / 60);
           timerText.textContent = `${h}h ${m}m`;
 
         } else if (now >= startTime && now < endTime) {
-          // DURING event: live status with green pulsing
-          circle.style.stroke = "#666"; // base color
+          // DURING event
+          circle.style.stroke = "limegreen";
+          circle.style.strokeDashoffset = 0;
+          circle.classList.add("glowing");
           timerText.textContent = "Live";
-
-          let glow = true;
-          clearInterval(circle._glowInterval); // prevent stacking
-
-          circle._glowInterval = setInterval(() => {
-            circle.style.stroke = glow ? "limegreen" : "#666";
-            glow = !glow;
-          }, 800);
 
         } else {
           // AFTER event
           circle.style.stroke = "red";
           circle.style.strokeDashoffset = 0;
+          circle.classList.remove("glowing");
           timerText.textContent = "Ended";
-
-          clearInterval(circle._glowInterval);
         }
       }
 
