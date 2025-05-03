@@ -1,42 +1,10 @@
 [
   {
     "date": "2025-05-03",
-    "event name": "WAU Rocketry Sharing Session",
-    "time": "20:00",
-    "platform": "Webex",
-    "fee": 1,
-    "registration link": "https://forms.gle/fqvXQAZuDS8LHSX56"
-  },
-  {
-    "date": "2025-05-03",
-    "event name": "#REF!",
-    "time": "NaN:00",
-    "platform": "#REF!",
-    "fee": "#REF!",
-    "registration link": "#REF!"
-  },
-  {
-    "date": "2025-05-03",
-    "event name": "#REF!",
-    "time": "NaN:00",
-    "platform": "#REF!",
-    "fee": "#REF!",
-    "registration link": "#REF!"
-  },
-  {
-    "date": "2025-05-03",
-    "event name": "#REF!",
-    "time": "NaN:00",
-    "platform": "#REF!",
-    "fee": "#REF!",
-    "registration link": "#REF!"
-  },
-  {
-    "date": "2025-05-03",
-    "event name": "GEAR UP FOR QUIZTRON",
-    "time": "NaN:00",
-    "platform": "GOOGLE FORM",
-    "fee": 1,
-    "registration link": "https://forms.gle/FLzf8Cmd1EvPLgYWA"
+    "event name": "test1",
+    "time": "20:30",
+    "end time": "21:00",
+    "venue": "Webex",
+    "registration link": "https://forms.gle/sqFFHQkZ9zX9osGDA"
   }
 ]
