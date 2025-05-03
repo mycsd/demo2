@@ -3,119 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Today's Events</title>
+  <title>Today's Events with Countdown</title>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: linear-gradient(-45deg, #f5f5f5, #e0e7ff, #f0fdf4, #f5f0ff);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-      padding: 20px;
-      text-align: center;
-      margin: 0;
-      overflow-x: hidden;
+    /* [Previous CSS styles remain the same...] */
+    
+    /* Add these new styles for countdown */
+    .countdown-container {
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
     }
-      @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-      }
-    /* Dynamic Island style */
-    .dynamic-island {
-      display: inline-block;
-      background-color: black;
-      color: white;
-      padding: 8px 20px 8px 30px; /* <-- more left padding */
-      border-radius: 30px;
-      font-size: 1.2em;
-      margin-bottom: 30px;
-      position: relative;
-      opacity: 0;
-      animation: fadeIn 2s ease-out forwards; /* Fade-in animation */
-    }
-
-    /* Breathing green dot */
-    .green-dot {
-      width: 10px;
-      height: 10px;
-      background-color: limegreen;
-      border-radius: 50%;
-      position: absolute;
-      top: 50%;
-      left: 12px; /* <-- left side inside */
-      transform: translateY(-50%);
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: translateY(-50%) scale(1); opacity: 1; }
-      50% { transform: translateY(-50%) scale(1.5); opacity: 0.5; }
-      100% { transform: translateY(-50%) scale(1); opacity: 1; }
-    }
-
-    /* Apple-style Notification */
-    .event-notification {
-  background: rgba(255, 255, 255, 0.2); /* 半透明背景 */
-  backdrop-filter: blur(10px); /* 毛玻璃模糊效果 */
-  -webkit-backdrop-filter: blur(10px); /* 兼容 Safari */
-  border-radius: 20px;
-  padding: 20px;
-  margin: 10px auto;
-  max-width: 400px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* 更柔和的阴影 */
-  border: 1px solid rgba(255, 255, 255, 0.2); /* 半透明边框增强质感 */
-  text-align: left;
-  opacity: 0;
-  animation: slideUp 1s ease-out forwards;
-}
-
-    @keyframes slideUp {
-      0% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .event-title {
-      font-size: 1.2em;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .event-info {
-      font-size: 0.95em;
-      margin: 4px 0;
-    }
-
-    .register-link {
-      margin-top: 10px;
-      display: inline-block;
-      background: #007aff;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 12px;
-      text-decoration: none;
+    
+    .countdown-title {
       font-size: 0.9em;
+      margin-bottom: 5px;
+      color: #555;
     }
-
-    .register-link:hover {
-      background: #0051a8;
+    
+    .countdown-timer {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
     }
-
-    /* Fade-in animation for page content */
-    @keyframes fadeIn {
-      0% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
+    
+    .countdown-unit {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 5px 8px;
+      border-radius: 5px;
+      min-width: 40px;
+      text-align: center;
     }
-
+    
+    .countdown-value {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    
+    .countdown-label {
+      font-size: 0.7em;
+      color: #666;
+    }
+    
+    .event-status {
+      margin-top: 5px;
+      font-weight: bold;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      display: inline-block;
+    }
+    
+    .status-upcoming {
+      background-color: #f0f7ff;
+      color: #0066cc;
+    }
+    
+    .status-ongoing {
+      background-color: #f0fff4;
+      color: #00a854;
+    }
+    
+    .status-ended {
+      background-color: #fff0f0;
+      color: #cc0000;
+    }
   </style>
 </head>
 <body>
@@ -149,29 +101,131 @@ async function loadEvents() {
       const card = document.createElement('div');
       card.className = 'event-notification';
 
+      // Parse event date and time
+      const eventDate = new Date(`${event.date}T${event.time}:00`);
+      const eventEndDate = event["end time"] ? new Date(`${event.date}T${event["end time"]}:00`) : null;
+      
       // Check if registration link is not "Walk In" or empty
       let registerHTML = '';
       if (event["registration link"] && event["registration link"].toLowerCase() !== 'walk in') {
         registerHTML = `<a class="register-link" href="${event["registration link"]}" target="_blank">Register</a>`;
-      } else if (event["registration link"].toLowerCase() === 'walk in') {
+      } else if (event["registration link"] && event["registration link"].toLowerCase() === 'walk in') {
         registerHTML = '<span class="register-link">Walk In</span>';
       }
+
+      // Format time range if end time exists
+      let timeHTML = '';
+      if (event["end time"]) {
+        timeHTML = `
+          <div class="event-info">
+            <strong>🕒 Time:</strong> 
+            <span class="time-range">
+              ${event.time}
+              <span class="time-separator">→</span>
+              ${event["end time"]}
+            </span>
+          </div>
+        `;
+      } else {
+        timeHTML = `<div class="event-info"><strong>🕒 Time:</strong> ${event.time}</div>`;
+      }
+
+      // Create countdown HTML with unique ID
+      const countdownId = `countdown-${event["event name"].replace(/\s+/g, '-').toLowerCase()}`;
+      const countdownHTML = `
+        <div class="countdown-container">
+          <div class="countdown-title">Event starts in:</div>
+          <div id="${countdownId}" class="countdown-timer">
+            <div class="countdown-unit">
+              <div class="countdown-value">--</div>
+              <div class="countdown-label">DAYS</div>
+            </div>
+            <div class="countdown-unit">
+              <div class="countdown-value">--</div>
+              <div class="countdown-label">HRS</div>
+            </div>
+            <div class="countdown-unit">
+              <div class="countdown-value">--</div>
+              <div class="countdown-label">MINS</div>
+            </div>
+            <div class="countdown-unit">
+              <div class="countdown-value">--</div>
+              <div class="countdown-label">SECS</div>
+            </div>
+          </div>
+          <div id="status-${countdownId}" class="event-status status-upcoming">UPCOMING</div>
+        </div>
+      `;
 
       card.innerHTML = `
         <div class="event-title">${event["event name"]}</div>
         <div class="event-info"><strong>📅 Date:</strong> ${event.date}</div>
-        <div class="event-info"><strong>🕒 Time:</strong> ${event.time}</div>
+        ${timeHTML}
         <div class="event-info"><strong>📍 Platform:</strong> ${event.venue}</div>
+        ${countdownHTML}
         ${registerHTML}
       `;
 
       container.appendChild(card);
+      
+      // Start countdown for this event
+      startCountdown(countdownId, eventDate, eventEndDate);
     });
 
   } catch (error) {
     console.error('Error loading events:', error);
     document.getElementById('events-container').innerText = 'Failed to load events.';
   }
+}
+
+function startCountdown(elementId, eventDate, eventEndDate) {
+  const countdownElement = document.getElementById(elementId);
+  const statusElement = document.getElementById(`status-${elementId}`);
+  
+  function updateCountdown() {
+    const now = new Date();
+    let timeRemaining = eventDate - now;
+    let status = 'upcoming';
+    
+    // Check if event has started
+    if (now >= eventDate) {
+      status = 'ongoing';
+      // Check if event has ended (if end time is provided)
+      if (eventEndDate && now >= eventEndDate) {
+        status = 'ended';
+        timeRemaining = 0;
+      } else {
+        // For ongoing events, show time until end (or 24hrs if no end time)
+        timeRemaining = eventEndDate ? eventEndDate - now : eventDate - now + (24 * 60 * 60 * 1000);
+      }
+    }
+    
+    // Update status display
+    statusElement.className = `event-status status-${status}`;
+    statusElement.textContent = status.toUpperCase();
+    
+    if (status === 'ended') {
+      countdownElement.innerHTML = '<div style="text-align: center;">This event has ended</div>';
+      return;
+    }
+    
+    // Calculate time units
+    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+    
+    // Update countdown display
+    const units = countdownElement.querySelectorAll('.countdown-unit');
+    units[0].innerHTML = `<div class="countdown-value">${days}</div><div class="countdown-label">DAYS</div>`;
+    units[1].innerHTML = `<div class="countdown-value">${hours}</div><div class="countdown-label">HRS</div>`;
+    units[2].innerHTML = `<div class="countdown-value">${minutes}</div><div class="countdown-label">MINS</div>`;
+    units[3].innerHTML = `<div class="countdown-value">${seconds}</div><div class="countdown-label">SECS</div>`;
+  }
+  
+  // Update immediately and then every second
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
 }
 
 loadEvents();
