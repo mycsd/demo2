@@ -1,29 +1,42 @@
 [
   {
-    "date": "2025-04-30",
-    "event name": "Trend in Robotics",
-    "time": "15:00",
-    "end_time": "16:00",
-    "venue": "Webex",
-    "fee": "Free",
-    "registration link": "https://docs.google.com/forms/d/e/1FAIpQLSfn-ND_b15Ly2a4mKxUWETwEjV5V8l8r3pcp6zB7y5vdL0Jrg/viewform"
+    "date": "2025-05-03",
+    "event name": "WAU Rocketry Sharing Session",
+    "time": "20:00",
+    "platform": "Webex",
+    "fee": 1,
+    "registration link": "https://forms.gle/fqvXQAZuDS8LHSX56"
   },
   {
-    "date": "2025-04-30",
-    "event name": "PREPARING FOR THE WORKFORCE",
-    "time": "20:00",
-    "end_time": "21:00",
-    "venue": "Webex",
-    "fee": 1,
-    "registration link": "https://forms.gle/7oX9PzrymFYvCGHr6"
+    "date": "2025-05-03",
+    "event name": "#REF!",
+    "time": "NaN:00",
+    "platform": "#REF!",
+    "fee": "#REF!",
+    "registration link": "#REF!"
   },
   {
-    "date": "2025-04-30",
-    "event name": "SHED THE LIGHT 3.0 TALK (Ep 4)",
-    "time": "20:00",
-    "end_time": "21:00",
-    "venue": "Webex",
+    "date": "2025-05-03",
+    "event name": "#REF!",
+    "time": "NaN:00",
+    "platform": "#REF!",
+    "fee": "#REF!",
+    "registration link": "#REF!"
+  },
+  {
+    "date": "2025-05-03",
+    "event name": "#REF!",
+    "time": "NaN:00",
+    "platform": "#REF!",
+    "fee": "#REF!",
+    "registration link": "#REF!"
+  },
+  {
+    "date": "2025-05-03",
+    "event name": "GEAR UP FOR QUIZTRON",
+    "time": "NaN:00",
+    "platform": "GOOGLE FORM",
     "fee": 1,
-    "registration link": "https://docs.google.com/forms/d/e/1FAIpQLScs1c46r89b2YAXlL8BWQd2_W4gB_VFFhdhVUmLvnegQdAQ-A/viewform"
+    "registration link": "https://forms.gle/FLzf8Cmd1EvPLgYWA"
   }
 ]
